@@ -1,0 +1,16 @@
+## The following should be set upon creation of the cluster 
+## to ensure that new indexes get created with 1 shard by default 
+## as there is a limit of 1000 shards per node and by default 
+## 5 shards per node get created which soon reaches this limit.
+## Only indexes with special requirements should have shards increased 
+## which can be done per index pattern with a new template
+##
+## It can be sent as a PUT request to the endpoint after provisioning
+
+PUT _template/template_1
+{
+  "index_patterns": ["*"],
+  "settings": {
+    "number_of_shards": 1
+  }
+}
