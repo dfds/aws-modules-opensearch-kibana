@@ -3,7 +3,7 @@
 resource "aws_security_group" "es" {
   name        = "${local.constructed_name}-opensearch"
   description = "Managed by Terraform"
-  vpc_id      = "${data.aws_vpc.selected.id}"
+  vpc_id      = data.aws_vpc.selected.id
 
   ingress {
     from_port = 443
@@ -11,14 +11,8 @@ resource "aws_security_group" "es" {
     protocol  = "tcp"
 
     cidr_blocks = [
-      "${data.aws_vpc.selected.cidr_block}",
+      data.aws_vpc.selected.cidr_block,
     ]
-  }
-  egress {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_blocks = ["62.255.171.93/32"]
   }
 }
 
@@ -29,7 +23,7 @@ resource "aws_iam_service_linked_role" "es" {
 ####### Comment to remove VPC
 
 data "aws_vpc" "selected" {
-  id = "${var.vpc_id}"
+  id = var.vpc_id
 }
 
 data "aws_iam_policy_document" "esdomain" {
@@ -43,7 +37,7 @@ data "aws_iam_policy_document" "esdomain" {
       type = "AWS"
 
       identifiers = [
-        "${aws_iam_role.authenticated.arn}"
+        aws_iam_role.authenticated.arn
       ]
     }
 
@@ -52,8 +46,8 @@ data "aws_iam_policy_document" "esdomain" {
 }
 
 resource "aws_opensearch_domain" "domain" {
-  domain_name = "${var.opensearch_domain_name}"
-  opensearch_version = "${var.opensearch_version}"
+  domain_name = var.opensearch_domain_name
+  opensearch_version = var.opensearch_version
 
   snapshot_options {
     automated_snapshot_start_hour = var.automated_snapshot_start_hour
@@ -71,10 +65,10 @@ resource "aws_opensearch_domain" "domain" {
    }
 
   cluster_config {
-    instance_type = "${var.instance_type}"
+    instance_type = var.instance_type
     instance_count = var.instance_count
     dedicated_master_enabled = var.dedicated_master_enabled
-    dedicated_master_type = "${var.dedicated_master_type}"
+    dedicated_master_type = var.dedicated_master_type
     dedicated_master_count = var.dedicated_master_count
     zone_awareness_enabled = var.zone_awareness_enabled
 
@@ -96,7 +90,7 @@ resource "aws_opensearch_domain" "domain" {
     enabled = true
     user_pool_id = var.user_pool_id
     identity_pool_id = aws_cognito_identity_pool.opensearch.id
-    role_arn = "${aws_iam_role.escognito.arn}"
+    role_arn = aws_iam_role.escognito.arn
   }
 
   node_to_node_encryption {
@@ -108,7 +102,7 @@ resource "aws_opensearch_domain" "domain" {
   vpc_options {
     subnet_ids = var.private_subnet_ids
     security_group_ids = [
-      "${aws_security_group.es.id}"
+      aws_security_group.es.id
     ]
   }
 
@@ -142,10 +136,6 @@ resource "aws_opensearch_domain" "domain" {
 data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
-
-data "aws_iam_policy_document" "opensearch-kibana" {
-  
-}
 
 ## S3 snapshot bucket
 resource "aws_s3_bucket" "snapshot" {

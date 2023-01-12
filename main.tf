@@ -1,10 +1,10 @@
 provider "aws" {
-  region  = "${var.aws_region}"
+  region  = var.aws_region
   version = "~> 4.0"
 }
 
 provider "aws" {
-  region = "${var.aws_cognito_region}"
+  region = var.aws_cognito_region
   version = "~> 4.0"
   alias = "cognito"
 }
@@ -17,8 +17,8 @@ terraform {
 
 locals {
   common_tags = {
-    Application = "${var.application_name}"
-    Environment = "${var.environment}"
+    Application = var.application_name
+    Environment = var.environment
   }
   constructed_name = "${var.environment}-${var.application_name}"
 }

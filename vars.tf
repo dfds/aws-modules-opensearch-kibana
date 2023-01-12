@@ -83,7 +83,7 @@ variable "user_pool_id" {
     description = "The user pool ID of users allowed to sign in to Kibana"
 }
 
-variable "elasticsearch_domain_name" {
+variable "opensearch_domain_name" {
     description = "Domain name of the Elasticsearch user pool"
 }
 
