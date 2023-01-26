@@ -139,3 +139,9 @@ variable "sg_ingress_rules" {
     cidr_blocks = list(string)
   }))
 }
+
+variable "create_service_role" {
+  description = "Whether to create service linked role"
+  type        = bool
+  default     = true
+}
